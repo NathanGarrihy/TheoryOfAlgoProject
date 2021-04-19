@@ -4,15 +4,28 @@
 // Pre-processor directive
 #define WORD uint64_t
 #define PF PRIX64
+#define BYTE uint8_t
 
-// operations on 64-bit words
-WORD Ch(WORD x, WORD y, WORD z) {
-    return (x&y)^(~x&z);
-}
+// Page 5 of the secure hash standard
+// Rotate right functions
+#define ROTR(x,n) (x>>n)|(x<<(W-n)) 
 
-WORD Maj(WORD x, WORD y, WORD z) {
-    return (x&y)^(x&z)^(y&z);
-}
+// Page 10 of the secure hash standard
+#define CH(x,y,z) (x&y)^(~x&z) 
+#define MAJ(x,y,z) (x&y)^(x&z)^(y&z)
+#define SHR(x,n) x>>n
+
+#define SIG0(x) ROTR(x,2)^ROTR(x,13)^ROTR(x,22)
+#define SIG1(x) ROTR(x,6)^ROTR(x,11)^ROTR(x,25)
+#define Sig0(x) ROTR(x,7)^ROTR(x,18)^SHR(x,3)
+#define Sig1(x) ROTR(x,17)^ROTR(x,19)^SHR(x,10)
+
+union Block
+{
+    BYTE bytes[64];
+    WORD words[16];
+    uint64_t sixf[8];
+};
 
 int main(int argc, char *argv[]) {
     // bit-wise variable definition
