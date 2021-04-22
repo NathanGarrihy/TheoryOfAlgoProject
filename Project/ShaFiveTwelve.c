@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include <inttypes.h>
 
+// Endianess. Adapted from:
+// https://developer.ibm.com/technologies/systems/articles/au-endianc/
+#include <byteswap.h>
+const int _i = 1;
+#define islilend() ((*(char *)&_i) != 0)
+
 // Pre-processor directive
 #define WORD uint64_t
 #define PF PRIX64
@@ -8,17 +14,18 @@
 
 // Page 5 of the secure hash standard
 // Rotate right functions
-#define ROTR(x,n) (x>>n)|(x<<(W-n)) 
+#define ROTR(_x, _n) ((_x >> _n) | (_x << ((sizeof(_x) * 8) - _n)))
 
-// Page 10 of the secure hash standard
-#define CH(x,y,z) (x&y)^(~x&z) 
-#define MAJ(x,y,z) (x&y)^(x&z)^(y&z)
-#define SHR(x,n) x>>n
+// The right shift operation
+#define SHR(_x, _n) (_x >> _n)
 
-#define SIG0(x) ROTR(x,2)^ROTR(x,13)^ROTR(x,22)
-#define SIG1(x) ROTR(x,6)^ROTR(x,11)^ROTR(x,25)
-#define Sig0(x) ROTR(x,7)^ROTR(x,18)^SHR(x,3)
-#define Sig1(x) ROTR(x,17)^ROTR(x,19)^SHR(x,10)
+#define CH(_x, _y, _z) ((_x & _y) ^ (~_x & _z)) 
+#define MAJ(_x, _y, _z) ((_x & _y) ^ (_x & _z) ^ (_y & _z))
+
+#define SIG0(_x) (ROTR(_x, 28) ^ ROTR(_x, 34) ^ ROTR(_x, 39)) 
+#define SIG1(_x) (ROTR(_x, 14) ^ ROTR(_x, 18) ^ ROTR(_x, 41)) 
+#define Sig0(_x) (ROTR(_x, 1) ^ ROTR(_x, 8) ^ SHR(_x, 7)) 
+#define Sig1(_x) (ROTR(_x, 19) ^ ROTR(_x, 61) ^ SHR(_x, 6))
 
 union Block
 {
@@ -91,57 +98,30 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
             // Say this is the last block.
             *S = END;
         }
-        else
-        {
-            // End of input message.
-            // Not enough room in this block for all padding
-            // Append a 1 bit (and seven 0 bits to make a full byte)
-            B->bytes[nobytes] = 0x80;
-            // Append 0 bits.
-            while (nobytes++ < 128)
-            {
-                B->bytes[nobytes] = 0x00;
-            }
-            // Change the status of PAD.
-            *S = PAD;
-        }
-    }
-    else if (*S == PAD)
-    {
-        nobytes = 0;
-        // Append 0 bits.
-        while (nobytes++ < 112) {
-            B->bytes[nobytes] = 0x00; // In bits: 00000000
-        }
-        // Append nobits as an integer.
-        B->sixf[15] = (islilend() ? bswap_64(*nobits) : *nobits);;
-        // Change the status to END.
-        *S = END;
-    }
-
-    // If little endian, wwap the byte order of the words
-    if (islilend())
-        for (int i = 0; i <= 15; i++)
-            B->words[i] = bswap_64(B->words[i]);
-
     return 1;
+}
 }
 
 int main(int argc, char *argv[]) {
-    // bit-wise variable definition
-    WORD x = 0x0F0F0F0F0F0F0F0F;
-    WORD y = 0x0A0A0A0A0A0A0A0A;
-    WORD z = 0xB0B0B0B0B0B0B0B0;
-    
-    // Calculation on bit-wise numbers
-    WORD chA = Ch(x, y, z);
-   // WORD majA = Maj(x, y, z);
-    WORD majA = Maj(x, y, z);
+    // Sha-512 initial hash values Section 5.3.4
+    WORD H[] = {
+        0x6a09e667f3bcc908,
+        0xbb67ae8584caa73b,
+        0x3c6ef372fe94f82b,
+        0xa54ff53a5f1d36f1,
+        0x510e527fade682d1,
+        0x9b05688c2b3e6c1f,
+        0x1f83d9abfb41bd6b,
+        0x5be0cd19137e2179
+    };
 
-    // Outputting answers
-    printf("Ch(%08" PF ",%08" PF ",%08" PF ")=%08" PF "\n", x, y, z, chA);
+    // File pointer for reading.
+    FILE *f;
+    // Open file from command line for reading.
+    f = fopen(argv[1], "r");
 
-    printf("Maj(%08" PF ",%08" PF ",%08" PF ")=%08" PF "\n", x, y, z, majA);
+    // Close the file.
+    fclose(f);
 
     return 0;
 }
