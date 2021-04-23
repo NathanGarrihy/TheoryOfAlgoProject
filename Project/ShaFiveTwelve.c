@@ -133,6 +133,38 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
     return 1;
 }
 
+int next_hash(union Block *M, WORD H[]) {
+    // Message schedule, Section 6.2.2 (after pre-processing)
+    WORD W[128];
+    // Iterator.
+    int t;
+    // Temporary variables.
+    WORD a, b, c, d, e, f, g, h, T1, T2;
+
+    // Section 6.2.2, part 1.
+    for (t = 0; t < 16; t++)
+        W[t] = M->words[t];
+    for (t = 16; t < 80; t++)
+        W[t] = Sig1(W[t-2]) + W[t-7] + Sig0(W[t-15]) + W[t-16];
+
+    // Section 6.2.2, part 2.
+    a = H[0]; b = H[1]; c = H[2]; d = H[3];
+    e = H[4]; f = H[5]; g = H[6]; h = H[7];
+
+    // Section 6.2.2, part 3.
+    for (t = 0; t < 80; t++) {
+        T1 = h + SIG1(e) + CH(e, f, g) + K[t] + W[t];
+        T2 = SIG0(a) + MAJ(a, b, c);
+        h = g; g = f; f = e; e = d + T1; d = c; c = b; b = a; a = T1 + T2;
+    }
+
+    // Section 6.2.2, part 4.
+    H[0] = a + H[0]; H[1] = b + H[1]; H[2] = c + H[2]; H[3] = d + H[3];
+    H[4] = e + H[4]; H[5] = f + H[5]; H[6] = g + H[6]; H[7] = h + H[7];
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
     // Sha-512 initial hash values Section 5.3.4
     WORD H[] = {
