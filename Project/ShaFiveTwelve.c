@@ -98,8 +98,39 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
             // Say this is the last block.
             *S = END;
         }
+        else
+        {
+            // End of input message.
+            // Not enough room in this block for all padding
+            // Append a 1 bit (and seven 0 bits to make a full byte)
+            B->bytes[nobytes] = 0x80;
+            // Append 0 bits.
+            while (nobytes++ < 128)
+            {
+                B->bytes[nobytes] = 0x00;
+            }
+            // Change the status of PAD.
+            *S = PAD;
+        }
+    }
+    else if (*S == PAD)
+    {
+        nobytes = 0;
+        // Append 0 bits.
+        while (nobytes++ < 112) {
+            B->bytes[nobytes] = 0x00; // In bits: 00000000
+        }
+        // Append nobits as an integer.
+        B->sixf[15] = (islilend() ? bswap_64(*nobits) : *nobits);;
+        // Change the status to END.
+        *S = END;
+    }
+
+    // If little endian, swap the byte order of the words
+    if (islilend())
+        for (int i = 0; i <= 15; i++)
+            B->words[i] = bswap_64(B->words[i]);
     return 1;
-}
 }
 
 int main(int argc, char *argv[]) {
