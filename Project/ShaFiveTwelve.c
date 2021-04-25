@@ -165,8 +165,29 @@ int next_hash(union Block *M, WORD H[]) {
     return 0;
 }
 
+int sha512(FILE *f, WORD H[]) {
+    // Function that performs/orchestrates the SHA256 algorithm on
+    // file input f.
+
+    // The current block.
+    union Block M;
+
+    // Total number of bits read.
+    uint64_t nobits = 0;
+
+    // Current status of reading input.
+    enum Status S = READ;
+
+    // Loop through the (preprocessed) blocks.
+    while (next_block(f, &M, &S, &nobits)) {
+        next_hash(&M, H);
+    }
+
+    return 0;
+}
+
 int main(int argc, char *argv[]) {
-    // Sha-512 initial hash values Section 5.3.4
+    // Initial Sha-512 hash values Section 5.3.4
     WORD H[] = {
         0x6a09e667f3bcc908,
         0xbb67ae8584caa73b,
@@ -182,6 +203,14 @@ int main(int argc, char *argv[]) {
     FILE *f;
     // Open file from command line for reading.
     f = fopen(argv[1], "r");
+
+    // Calculate the SHA256 of f.
+    sha512(f, H);
+
+    // Print the final SHA256 hash.
+    for (int i = 0; i < 8; i++)
+        printf("%016" PF, H[i]);
+    printf("\n");
 
     // Close the file.
     fclose(f);
