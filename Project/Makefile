@@ -1,6 +1,8 @@
+EXECS=args sha512
 
-EXECS=args ShaFiveTwelve
-
-ShaFiveTwelve: ShaFiveTwelve.c
-	cc -o ShaFiveTwelve ShaFiveTwelve.c
+ShaFiveTwelve: sha512.c
+	cc -o sha512 sha512.c
 	echo "Hello from Makefile"
+
+clean:
+	rm -f $(EXECS)
