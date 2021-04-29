@@ -45,8 +45,8 @@ enum Status
     END
 };
 
-// The hexadecimal values for thefirst 64 bits of the fractional
-// parts of the cubic roots of the first eighty prime numbers
+// The hexadecimal values for the first 64 bits of the fractional
+// Parts of the cubic roots of the first 80 prime numbers (2->409)
 const WORD K[] = {
     0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc,
     0x3956c25bf348b538, 0x59f111f1b605d019, 0x923f82a4af194f9b, 0xab1c5ed5da6d8118,
@@ -70,6 +70,7 @@ const WORD K[] = {
     0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
+// Message padding Secure hash algorithm section 5.1 & 5.2
 // Returns 0 if the padded message has been consumed or
 // 1 if it created a new block from the original message
 int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
@@ -79,7 +80,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
 
     if (*S == END)
     {
-        // last block
+        // Last block
         return 0;
     }
     else if (*S == READ)
@@ -91,7 +92,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
         // Enough room for padding
         if (nobytes == 128)
         {
-            // don't do anything
+            // Don't do anything
             return 1;
         }
         else if (nobytes < 112)
@@ -106,7 +107,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
             }
             // Append length of original input (CHECK ENDIANESS)
             B->sixf[15] = (islilend() ? bswap_64(*nobits) : *nobits);
-            // Set status to END
+            // Set status to END / last block.
             *S = END;
         }
         else
@@ -144,7 +145,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
 }
 
 int next_hash(union Block *M, WORD H[]) {
-    // Message schedule/Hash Computation
+    // Hash Computation/Message schedule
     // Section 6.4.2 (after pre-processing)
     WORD W[128];
     // Iterator.
