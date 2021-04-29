@@ -29,7 +29,7 @@ const int _i = 1;
 #define Sig0(_x) (ROTR(_x, 1) ^ ROTR(_x, 8) ^ SHR(_x, 7)) 
 #define Sig1(_x) (ROTR(_x, 19) ^ ROTR(_x, 61) ^ SHR(_x, 6))
 
-// 512 bit block for sha-512
+// 1024 bit block for sha-512
 union Block
 {
     BYTE bytes[64];
