@@ -13,20 +13,23 @@ const int _i = 1;
 #define BYTE uint8_t
 
 // Page 5 of the secure hash standard
-// Rotate right functions
+// Rotate right function
 #define ROTR(_x, _n) ((_x >> _n) | (_x << ((sizeof(_x) * 8) - _n)))
 
 // The right shift operation
 #define SHR(_x, _n) (_x >> _n)
 
+// Page 11 of the secure hash standard
+// Each function operates on 64-bit words, represented as x, y, and z.
+// The result of each function is a new 64-bit word
 #define CH(_x, _y, _z) ((_x & _y) ^ (~_x & _z)) 
 #define MAJ(_x, _y, _z) ((_x & _y) ^ (_x & _z) ^ (_y & _z))
-
 #define SIG0(_x) (ROTR(_x, 28) ^ ROTR(_x, 34) ^ ROTR(_x, 39)) 
 #define SIG1(_x) (ROTR(_x, 14) ^ ROTR(_x, 18) ^ ROTR(_x, 41)) 
 #define Sig0(_x) (ROTR(_x, 1) ^ ROTR(_x, 8) ^ SHR(_x, 7)) 
 #define Sig1(_x) (ROTR(_x, 19) ^ ROTR(_x, 61) ^ SHR(_x, 6))
 
+// 512 bit block for sha-512
 union Block
 {
     BYTE bytes[64];
@@ -34,6 +37,7 @@ union Block
     uint64_t sixf[8];
 };
 
+// Used with the input message
 enum Status
 {
     READ,
@@ -41,6 +45,8 @@ enum Status
     END
 };
 
+// The hexadecimal values for thefirst 64 bits of the fractional
+// parts of the cubic roots of the first eighty prime numbers
 const WORD K[] = {
     0x428a2f98d728ae22, 0x7137449123ef65cd, 0xb5c0fbcfec4d3b2f, 0xe9b5dba58189dbbc,
     0x3956c25bf348b538, 0x59f111f1b605d019, 0x923f82a4af194f9b, 0xab1c5ed5da6d8118,
@@ -64,6 +70,8 @@ const WORD K[] = {
     0x4cc5d4becb3e42b6, 0x597f299cfc657e2a, 0x5fcb6fab3ad6faec, 0x6c44198c4a475817
 };
 
+// Returns 0 if the padded message has been consumed or
+// 1 if it created a new block from the original message
 int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
 {
     // Num of bytes to read
@@ -71,6 +79,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
 
     if (*S == END)
     {
+        // last block
         return 0;
     }
     else if (*S == READ)
@@ -82,12 +91,14 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
         // Enough room for padding
         if (nobytes == 128)
         {
+            // don't do anything
             return 1;
         }
         else if (nobytes < 112)
         {
+            // We have enough room for all of the padding
             // Append a 1 bit (and seven 0 bits to make a full byte).
-            B->bytes[nobytes] = 0x80; // In bits: 1000000
+            B->bytes[nobytes] = 0x80; // In bits: 10000000
             // Append enough 0 bits, leaving 64 at the end
             while (nobytes++ < 112)
             {
@@ -95,7 +106,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
             }
             // Append length of original input (CHECK ENDIANESS)
             B->sixf[15] = (islilend() ? bswap_64(*nobits) : *nobits);
-            // Say this is the last block.
+            // Set status to END
             *S = END;
         }
         else
@@ -107,20 +118,19 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
             // Append 0 bits.
             while (nobytes++ < 128)
             {
-                B->bytes[nobytes] = 0x00;
+                B->bytes[nobytes] = 0x00;// In bits: 00000000
             }
-            // Change the status of PAD.
+            // Set status to PAD.
             *S = PAD;
         }
     }
     else if (*S == PAD)
     {
-        nobytes = 0;
         // Append 0 bits.
         while (nobytes++ < 112) {
             B->bytes[nobytes] = 0x00; // In bits: 00000000
         }
-        // Append nobits as an integer.
+        // Append nobits as an integer
         B->sixf[15] = (islilend() ? bswap_64(*nobits) : *nobits);;
         // Change the status to END.
         *S = END;
@@ -134,31 +144,32 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
 }
 
 int next_hash(union Block *M, WORD H[]) {
-    // Message schedule, Section 6.2.2 (after pre-processing)
+    // Message schedule/Hash Computation
+    // Section 6.4.2 (after pre-processing)
     WORD W[128];
     // Iterator.
     int t;
-    // Temporary variables.
+    // Temporary variables
     WORD a, b, c, d, e, f, g, h, T1, T2;
 
-    // Section 6.2.2, part 1.
+    // Section 6.4.2, part 1
     for (t = 0; t < 16; t++)
         W[t] = M->words[t];
     for (t = 16; t < 80; t++)
         W[t] = Sig1(W[t-2]) + W[t-7] + Sig0(W[t-15]) + W[t-16];
 
-    // Section 6.2.2, part 2.
+    // Section 6.4.2, part 2
     a = H[0]; b = H[1]; c = H[2]; d = H[3];
     e = H[4]; f = H[5]; g = H[6]; h = H[7];
 
-    // Section 6.2.2, part 3.
+    // Section 6.4.2, part 3
     for (t = 0; t < 80; t++) {
         T1 = h + SIG1(e) + CH(e, f, g) + K[t] + W[t];
         T2 = SIG0(a) + MAJ(a, b, c);
         h = g; g = f; f = e; e = d + T1; d = c; c = b; b = a; a = T1 + T2;
     }
 
-    // Section 6.2.2, part 4.
+    // Section 6.4.2, part 4
     H[0] = a + H[0]; H[1] = b + H[1]; H[2] = c + H[2]; H[3] = d + H[3];
     H[4] = e + H[4]; H[5] = f + H[5]; H[6] = g + H[6]; H[7] = h + H[7];
 
@@ -166,19 +177,17 @@ int next_hash(union Block *M, WORD H[]) {
 }
 
 int sha512(FILE *f, WORD H[]) {
-    // Function that performs/orchestrates the SHA256 algorithm on
-    // file input f.
-
-    // The current block.
+    // Function that performs/orchestrates the SHA512 algorithm on
+    // The current block
     union Block M;
 
-    // Total number of bits read.
+    // Total number of bits read
     uint64_t nobits = 0;
 
-    // Current status of reading input.
+    // Current status of reading input
     enum Status S = READ;
 
-    // Loop through the (preprocessed) blocks.
+    // Loop through the (preprocessed) blocks
     while (next_block(f, &M, &S, &nobits)) {
         next_hash(&M, H);
     }
@@ -187,7 +196,7 @@ int sha512(FILE *f, WORD H[]) {
 }
 
 int main(int argc, char *argv[]) {
-    // Initial Sha-512 hash values Section 5.3.4
+    // Initial Sha-512 hash values Section 5.3.5
     WORD H[] = {
         0x6a09e667f3bcc908,
         0xbb67ae8584caa73b,
@@ -199,20 +208,20 @@ int main(int argc, char *argv[]) {
         0x5be0cd19137e2179
     };
 
-    // File pointer for reading.
+    // File pointer for reading
     FILE *f;
-    // Open file from command line for reading.
+    // Open file from command line for reading
     f = fopen(argv[1], "r");
 
-    // Calculate the SHA256 of f.
+    // Calculate the SHA512 of File f
     sha512(f, H);
 
-    // Print the final SHA256 hash.
+    // Print the final SHA256 hash
     for (int i = 0; i < 8; i++)
         printf("%016" PF, H[i]);
     printf("\n");
 
-    // Close the file.
+    // Close the file
     fclose(f);
 
     return 0;
