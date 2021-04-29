@@ -178,7 +178,7 @@ int next_hash(union Block *M, WORD H[]) {
 }
 
 int sha512(FILE *f, WORD H[]) {
-    // Function that performs/orchestrates the SHA512 algorithm on
+    // Function that performs/orchestrates the SHA512 algorithm
     // The current block
     union Block M;
 

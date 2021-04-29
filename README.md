@@ -16,16 +16,16 @@ argument and output the SHA512 digest of it.
 * It must also include tests which run upon 'make test' being called
 * Last commit on or before the 3rd May 2021
 
-We had completed sha256 in class so the main part of this project consisted of learning how SHA512 differs
+We had completed SHA256 in class so the main part of this project consisted of learning how SHA512 differs
 from SHA256 and figuring out how to implement these changes. This was aided by [the secure hash standard](https://www.nist.gov/publications/secure-hash-standard)
 which clearly outlines hash algorithms that can be used to generate message digests.
 
 ## Description
-While they are very similar in structure, the main differences between sha512 and sha256 were:
+While they are very similar in structure, the main differences between sha512 and SHA256 were:
 * With sha512, the message is broken into 1024-bit chunks
 * Initial hash values and round constants are increased to 64 bits
 * Rounds are increased from 64 to 80
-* Message sechedule array contains 80 64-bit words(sha512) as opposed to 64 32-bit words(sha256)
+* Message sechedule array contains 80 64-bit words(sha512) as opposed to 64 32-bit words(SHA256)
 * The loop to extend message schedule array goes from 16 to 79
 * First 80 prime numbers (2 to 409) are the base of the round constants
 * Calculation word size is 64-bits long
@@ -171,7 +171,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
 }
 ```
 
-Setting the initial hash value is left to the main method.
+Setting the initial hash value is performed in the main method.
 <br/><br/>
 #####The next_hash function
 is in charge of Hash Computation, where it uses the pre-defined bitwise and logical functions and constants
@@ -194,8 +194,10 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
     e = H[4]; f = H[5]; g = H[6]; h = H[7];
     ```
 
-3. Swap values For t= 0 to 79:<br/>
+3. Swap values For t= 0 to 79:
+<br/>
 ![Swap values](https://i.gyazo.com/dde576b9c15249b7ba6798ce63c4208a.png "Rearrange Values")
+
     ```c
    for (t = 0; t < 80; t++) {
            T1 = h + SIG1(e) + CH(e, f, g) + K[t] + W[t];
@@ -206,10 +208,52 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
 4. Compute the i<sup>th</sup> intermediate hash value H<sup>(i)</sup>
 <br/>
 ![Compute Intermediate](https://i.gyazo.com/99ba25cd25b66af3df1a3a5af8ae5e8c.png "Compute Intermediate")
+
     ```c
    H[0] = a + H[0]; H[1] = b + H[1]; H[2] = c + H[2]; H[3] = d + H[3];
    H[4] = e + H[4]; H[5] = f + H[5]; H[6] = g + H[6]; H[7] = h + H[7];
     ```
+#####The sha512 function
+The sha512 function takes in a file and an array of unsigned 64 bit integers. Its main purpose is to
+loop the next_block function which executes the message padding. It then passes the Block and ungisned 
+integers to the next_hash function which performs message scheduling  
+the hash computation. 
+
+    ```c
+    while (next_block(f, &M, &S, &nobits)) {
+        next_hash(&M, H);
+        }
+    ```
+Once it has completed these steps it forms the 512-bit message digest:
+![Message Digest](https://i.gyazo.com/c0fc38771e8aadd34acf5a0fbaaf5208.png "Message Digest")
+
+#####Main code
+The main code first initializes an array of 8 unsigned 64-bit integers which are the official initial hash values for sha512. They can also be
+found by taking the first 64-bits of the fractional parts of the square roots of the first 8 prime numbers. I then create the file pointer for 
+reading and read in the file from the command line for reading.
+
+    ```c
+    FILE *f;
+    f = fopen(argv[1], "r");
+    ```
+It then runs the sha512 function, providing the input file and initial hash values as perameters. It then prints each character of the hash digest to the screen.
+
+    ```c
+    for (int i = 0; i < 8; i++)
+        printf("%016" PF, H[i]);
+        printf("\n");
+    ```
+and finally closes the file and returns 0 to exit the main method.
+<br/>
+The repository also contains a Makefile which is essentially a text file that contains the instructions for building the program on the command line. Each command
+is its own seperate rule inside the Makefile.
+<br/>
+![Makefile](https://i.gyazo.com/c8cf3a2a54b76089b5956091e4e7069b.png "Makefile")
+<br/>
+In my tests.sh file I created a test for the abc.txt file and the empty text file which both compare the output of sha512 to the output of the built in sha512sum
+function and returns a message to the user informing them whether the output was as expected or if the test failed.
+My repo also contains a gitignore file which restricts the unnecessary files from being uploaded, as well as the empty text
+file and abc.txt file which contains the string "abc". 
 
 ## Compilation instructions
 
