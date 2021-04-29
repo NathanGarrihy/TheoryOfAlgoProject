@@ -186,7 +186,6 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
     ```
 
 2. Initialize the eight working variables with the (i-1)<sup>st</sup> hash value:
-<br/>
 ![Init working](https://i.gyazo.com/0708c88fbb72f4793044111a33d8497c.png "Initialize wv")
 
     ```c
@@ -195,7 +194,6 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
     ```
 
 3. Swap values For t= 0 to 79:
-<br/>
 ![Swap values](https://i.gyazo.com/dde576b9c15249b7ba6798ce63c4208a.png "Rearrange Values")
 
     ```c
@@ -207,7 +205,6 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
     ```
    
 4. Compute the i<sup>th</sup> intermediate hash value H<sup>(i)</sup>
-<br/>
 ![Compute Intermediate](https://i.gyazo.com/99ba25cd25b66af3df1a3a5af8ae5e8c.png "Compute Intermediate")
 
     ```c
