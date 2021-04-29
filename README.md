@@ -218,11 +218,11 @@ loop the next_block function which executes the message padding. It then passes 
 integers to the next_hash function which performs message scheduling  
 the hash computation. 
 
-    ```c
+```c
     while (next_block(f, &M, &S, &nobits)) {
         next_hash(&M, H);
         }
-    ```
+```
     
 Once it has completed these steps it forms the 512-bit message digest:
 ![Message Digest](https://i.gyazo.com/c0fc38771e8aadd34acf5a0fbaaf5208.png "Message Digest")
@@ -232,17 +232,17 @@ The main code first initializes an array of 8 unsigned 64-bit integers which are
 found by taking the first 64-bits of the fractional parts of the square roots of the first 8 prime numbers. I then create the file pointer for 
 reading and read in the file from the command line for reading.
 
-    ```c
+```c
     FILE *f;
     f = fopen(argv[1], "r");
-    ```
+```
 It then runs the sha512 function, providing the input file and initial hash values as parameters. It then prints each character of the hash digest to the screen.
 
-    ```c
+```c
     for (int i = 0; i < 8; i++)
         printf("%016" PF, H[i]);
         printf("\n");
-    ```
+```
 and finally closes the file and returns 0 to exit the main method.
 <br/>
 The repository also contains a Makefile which is essentially a text file that contains the instructions for building the program on the command line. Each command
