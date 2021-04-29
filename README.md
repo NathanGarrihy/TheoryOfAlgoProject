@@ -25,7 +25,7 @@ While they are very similar in structure, the main differences between sha512 an
 * With sha512, the message is broken into 1024-bit chunks
 * Initial hash values and round constants are increased to 64 bits
 * Rounds are increased from 64 to 80
-* Message sechedule array contains 80 64-bit words(sha512) as opposed to 64 32-bit words(SHA256)
+* Message schedule array contains 80 64-bit words(sha512) as opposed to 64 32-bit words(SHA256)
 * The loop to extend message schedule array goes from 16 to 79
 * First 80 prime numbers (2 to 409) are the base of the round constants
 * Calculation word size is 64-bits long
@@ -33,8 +33,8 @@ While they are very similar in structure, the main differences between sha512 an
 
 The sha512.c file is the file which contains all of the main code for this project. For this file, I first
 set up my pre-processor directive by assigning some constant variable values. I set up 'WORD' as a 'uint64_t', which is
-an unsigned integer that carries a guarenteed width of 64 bits. PY as a PRIx64, which is a string literal that's used to
-notify printf's of a 64 bit unsigned hexadecimal value. As well as BYTE, which is a uint8_t, similar to WORD but only
+an unsigned integer that carries a guaranteed width of 64 bits. PY as a PRIx64, which is a string literal that's used to
+notify printf's of a 64 bit unsigned hexadecimal value. As well as BYTE, which is a uint8_t, like WORD but only
 carries a width of 8 bits.
 
 ```C
@@ -90,7 +90,7 @@ enum Status
 For my final variable declaration I setup an array of constant 64 bit unsigned integers, which contains the 80 constant 64-bit 
 words which are used by SHA-512.
 <br/>
-#####The next_block function 
+##### The next_block function 
 handles the majority of the preprocessing. It takes in a file, block, status and number of bits. It's in charge of
 first padding the message, which is first done to ensure that the padded message is a multiple of 1024 bits. Padding is inserted before 
 hash computation begins on a message.
@@ -173,7 +173,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
 
 Setting the initial hash value is performed in the main method.
 <br/><br/>
-#####The next_hash function
+##### The next_hash function
 is in charge of Hash Computation, where it uses the pre-defined bitwise and logical functions and constants
 and performs addition modulo 2<sup>64</sup>. Each message block is processed in order:
 1. Preparing the working schedule:
@@ -187,7 +187,7 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
 
 2. Initialize the eight working variables with the (i-1)<sup>st</sup> hash value:
 <br/>
-![Init working variables](https://i.gyazo.com/0708c88fbb72f4793044111a33d8497c.png "Initialize working variables")
+![Init working](https://i.gyazo.com/0708c88fbb72f4793044111a33d8497c.png "Initialize wv")
 
     ```c
     a = H[0]; b = H[1]; c = H[2]; d = H[3];
@@ -205,6 +205,7 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
            h = g; g = f; f = e; e = d + T1; d = c; c = b; b = a; a = T1 + T2;
        }
     ```
+   
 4. Compute the i<sup>th</sup> intermediate hash value H<sup>(i)</sup>
 <br/>
 ![Compute Intermediate](https://i.gyazo.com/99ba25cd25b66af3df1a3a5af8ae5e8c.png "Compute Intermediate")
@@ -213,9 +214,10 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
    H[0] = a + H[0]; H[1] = b + H[1]; H[2] = c + H[2]; H[3] = d + H[3];
    H[4] = e + H[4]; H[5] = f + H[5]; H[6] = g + H[6]; H[7] = h + H[7];
     ```
-#####The sha512 function
+   
+##### The sha512 function
 The sha512 function takes in a file and an array of unsigned 64 bit integers. Its main purpose is to
-loop the next_block function which executes the message padding. It then passes the Block and ungisned 
+loop the next_block function which executes the message padding. It then passes the Block and unsigned 
 integers to the next_hash function which performs message scheduling  
 the hash computation. 
 
@@ -224,10 +226,11 @@ the hash computation.
         next_hash(&M, H);
         }
     ```
+    
 Once it has completed these steps it forms the 512-bit message digest:
 ![Message Digest](https://i.gyazo.com/c0fc38771e8aadd34acf5a0fbaaf5208.png "Message Digest")
 
-#####Main code
+##### Main code
 The main code first initializes an array of 8 unsigned 64-bit integers which are the official initial hash values for sha512. They can also be
 found by taking the first 64-bits of the fractional parts of the square roots of the first 8 prime numbers. I then create the file pointer for 
 reading and read in the file from the command line for reading.
@@ -236,7 +239,7 @@ reading and read in the file from the command line for reading.
     FILE *f;
     f = fopen(argv[1], "r");
     ```
-It then runs the sha512 function, providing the input file and initial hash values as perameters. It then prints each character of the hash digest to the screen.
+It then runs the sha512 function, providing the input file and initial hash values as parameters. It then prints each character of the hash digest to the screen.
 
     ```c
     for (int i = 0; i < 8; i++)
@@ -246,7 +249,7 @@ It then runs the sha512 function, providing the input file and initial hash valu
 and finally closes the file and returns 0 to exit the main method.
 <br/>
 The repository also contains a Makefile which is essentially a text file that contains the instructions for building the program on the command line. Each command
-is its own seperate rule inside the Makefile.
+is its own separate rule inside the Makefile.
 <br/>
 ![Makefile](https://i.gyazo.com/c8cf3a2a54b76089b5956091e4e7069b.png "Makefile")
 <br/>
@@ -268,5 +271,5 @@ file and abc.txt file which contains the string "abc".
 
 ## How difficult is it to find a hash digest beginning with at least twelve zeros?
 
-#References
+# References
 [SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
