@@ -9,7 +9,7 @@ const int _i = 1;
 
 // Pre-processor directive
 #define WORD uint64_t
-#define PF PRIX64
+#define PF PRIx64
 #define BYTE uint8_t
 
 // Page 5 of the secure hash standard
@@ -76,7 +76,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
     else if (*S == READ)
     {
         // Try to read 128 bytes.
-        nobytes = fread(&B->bytes, 1, 128, f);
+        nobytes = fread(B->bytes, 1, 128, f);
         // Calculate the total bits read so far.
         *nobits = *nobits + (8 * nobytes);
         // Enough room for padding
@@ -87,7 +87,7 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
         else if (nobytes < 112)
         {
             // Append a 1 bit (and seven 0 bits to make a full byte).
-            B->bytes[nobytes++] = 0x80; // In bits: 1000000
+            B->bytes[nobytes] = 0x80; // In bits: 1000000
             // Append enough 0 bits, leaving 64 at the end
             while (nobytes++ < 112)
             {
