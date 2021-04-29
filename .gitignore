@@ -4,7 +4,6 @@ funcs
 preproc
 emptyexec
 
-
 # Prerequisites
 *.d
 
