@@ -170,14 +170,16 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
     return 1;
 }
 ```
-
-Setting the initial hash value is performed in the main method.
+By using the big-endian convention throughout, for each 64-bit word, the left-most bit is stored in the most signficant bit position.
+The final piece of pre-processing, setting the initial hash value, is performed in the main method.
 <br/><br/>
 ##### The next_hash function
 is in charge of Hash Computation, where it uses the pre-defined bitwise and logical functions and constants
 and performs addition modulo 2<sup>64</sup>. Each message block is processed in order:
 1. Preparing the working schedule:
 ![Prepare Message Schedule](https://i.gyazo.com/8618261e0b3019d2852567bd5f5c8ac4.png "Prepare Message Schedule")
+![Message schedule](https://i.gyazo.com/9d70cdd72d621b53e9e31ecb586a645b.png "SHA-512 Message schedule")
+
     ```c
     for (t = 0; t < 16; t++)
         W[t] = M->words[t];
@@ -245,6 +247,7 @@ It then runs the sha512 function, providing the input file and initial hash valu
 ```
 and finally closes the file and returns 0 to exit the main method.
 <br/>
+##### Other files
 The repository also contains a Makefile which is essentially a text file that contains the instructions for building the program on the command line. Each command
 is its own separate rule inside the Makefile.
 <br/>
@@ -259,7 +262,8 @@ file and abc.txt file which contains the string "abc".
 
 
 ## What the SHA512 algorithm is and why it's important
-
+The SHA-512 algorithm is a secure hash algorithm which takes a message of any length < 2<sup>128</sup> bits as input into the SHA-512 hash algorithm. It returns
+an output known as a message digest, which has a length of 512 bits.
 
 # Questions:
 ## Why can't we reverse the SHA512 algorithm to retrieve the original message from a hash digest?
@@ -270,3 +274,4 @@ file and abc.txt file which contains the string "abc".
 
 # References
 [SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
+[Descriptions of SHA-256, SHA-384, and SHA-512](http://www.iwar.org.uk/comsec/resources/cipher/sha256-384-512.pdf)
