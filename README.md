@@ -170,14 +170,16 @@ int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
     return 1;
 }
 ```
-
-Setting the initial hash value is performed in the main method.
+By using the big-endian convention throughout, for each 64-bit word, the left-most bit is stored in the most signficant bit position.
+The final piece of pre-processing, setting the initial hash value, is performed in the main method.
 <br/><br/>
 ##### The next_hash function
 is in charge of Hash Computation, where it uses the pre-defined bitwise and logical functions and constants
 and performs addition modulo 2<sup>64</sup>. Each message block is processed in order:
 1. Preparing the working schedule:
 ![Prepare Message Schedule](https://i.gyazo.com/8618261e0b3019d2852567bd5f5c8ac4.png "Prepare Message Schedule")
+![Message schedule](https://i.gyazo.com/9d70cdd72d621b53e9e31ecb586a645b.png "SHA-512 Message schedule")
+
     ```c
     for (t = 0; t < 16; t++)
         W[t] = M->words[t];
@@ -186,7 +188,6 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
     ```
 
 2. Initialize the eight working variables with the (i-1)<sup>st</sup> hash value:
-<br/>
 ![Init working](https://i.gyazo.com/0708c88fbb72f4793044111a33d8497c.png "Initialize wv")
 
     ```c
@@ -195,7 +196,6 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
     ```
 
 3. Swap values For t= 0 to 79:
-<br/>
 ![Swap values](https://i.gyazo.com/dde576b9c15249b7ba6798ce63c4208a.png "Rearrange Values")
 
     ```c
@@ -207,7 +207,6 @@ and performs addition modulo 2<sup>64</sup>. Each message block is processed in 
     ```
    
 4. Compute the i<sup>th</sup> intermediate hash value H<sup>(i)</sup>
-<br/>
 ![Compute Intermediate](https://i.gyazo.com/99ba25cd25b66af3df1a3a5af8ae5e8c.png "Compute Intermediate")
 
     ```c
@@ -221,11 +220,11 @@ loop the next_block function which executes the message padding. It then passes 
 integers to the next_hash function which performs message scheduling  
 the hash computation. 
 
-    ```c
+```c
     while (next_block(f, &M, &S, &nobits)) {
         next_hash(&M, H);
         }
-    ```
+```
     
 Once it has completed these steps it forms the 512-bit message digest:
 ![Message Digest](https://i.gyazo.com/c0fc38771e8aadd34acf5a0fbaaf5208.png "Message Digest")
@@ -235,19 +234,20 @@ The main code first initializes an array of 8 unsigned 64-bit integers which are
 found by taking the first 64-bits of the fractional parts of the square roots of the first 8 prime numbers. I then create the file pointer for 
 reading and read in the file from the command line for reading.
 
-    ```c
+```c
     FILE *f;
     f = fopen(argv[1], "r");
-    ```
+```
 It then runs the sha512 function, providing the input file and initial hash values as parameters. It then prints each character of the hash digest to the screen.
 
-    ```c
+```c
     for (int i = 0; i < 8; i++)
         printf("%016" PF, H[i]);
         printf("\n");
-    ```
+```
 and finally closes the file and returns 0 to exit the main method.
 <br/>
+##### Other files
 The repository also contains a Makefile which is essentially a text file that contains the instructions for building the program on the command line. Each command
 is its own separate rule inside the Makefile.
 <br/>
@@ -262,7 +262,8 @@ file and abc.txt file which contains the string "abc".
 
 
 ## What the SHA512 algorithm is and why it's important
-
+The SHA-512 algorithm is a secure hash algorithm which takes a message of any length < 2<sup>128</sup> bits as input into the SHA-512 hash algorithm. It returns
+an output known as a message digest, which has a length of 512 bits.
 
 # Questions:
 ## Why can't we reverse the SHA512 algorithm to retrieve the original message from a hash digest?
@@ -273,3 +274,4 @@ file and abc.txt file which contains the string "abc".
 
 # References
 [SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
+[Descriptions of SHA-256, SHA-384, and SHA-512](http://www.iwar.org.uk/comsec/resources/cipher/sha256-384-512.pdf)
