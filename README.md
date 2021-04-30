@@ -95,8 +95,7 @@ handles the majority of the preprocessing. It takes in a file, block, status and
 first padding the message, which is first done to ensure that the padded message is a multiple of 1024 bits. Padding is inserted before 
 hash computation begins on a message.
 <br/>
-The message and its padding are parsed into N 1024-bit blocks, M<sup>(1)</sup>, M<sup>(2)</sup>, …, M<sup>(N)</sup>
-. Since the 1024 bits of the input block may be expressed as 16 64-bit words.
+The message and its padding are parsed into N 1024-bit blocks, M<sup>(1)</sup>, M<sup>(2)</sup>, …, M<sup>(N)</sup>.
 
 ```c
 int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
@@ -262,8 +261,18 @@ file and abc.txt file which contains the string "abc".
 
 
 ## What the SHA512 algorithm is and why it's important
-The SHA-512 algorithm is a secure hash algorithm which takes a message of any length < 2<sup>128</sup> bits as input into the SHA-512 hash algorithm. It returns
-an output known as a message digest, which has a length of 512 bits.
+SHA-512 is a function of cryptographic algorithm SHA-2, derived from SHA-1. The algorithm is a secure hash algorithm
+which is part of the Secure Hash Standard (SHS) (FIPS PUB 180-4) and by is a Computer security standard 
+in Cryptography. It takes a message of any length < 2<sup>128</sup> bits as input 
+into the SHA-512 hash algorithm. It returns an output known as a message digest, which has a length of 512 bits.
+According to the secure hash standard, SHA512 is "secure" because any change to a message will, with a very high probability, 
+result in a different message digest. It is also computationally infeasible to:
+* find a message that corresponds to a given message digest, or
+* find two different messages that produce the same message digest.
+
+
+SHA512 is mainly used for internet security, digital certificates and even blockchains.
+I previously explained how this algorithm works [in the description](#Description), so I won't repeat myself.
 
 # Questions:
 ## Why can't we reverse the SHA512 algorithm to retrieve the original message from a hash digest?
