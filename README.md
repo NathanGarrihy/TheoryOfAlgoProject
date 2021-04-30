@@ -95,8 +95,7 @@ handles the majority of the preprocessing. It takes in a file, block, status and
 first padding the message, which is first done to ensure that the padded message is a multiple of 1024 bits. Padding is inserted before 
 hash computation begins on a message.
 <br/>
-The message and its padding are parsed into N 1024-bit blocks, M<sup>(1)</sup>, M<sup>(2)</sup>, …, M<sup>(N)</sup>
-. Since the 1024 bits of the input block may be expressed as 16 64-bit words.
+The message and its padding are parsed into N 1024-bit blocks, M<sup>(1)</sup>, M<sup>(2)</sup>, …, M<sup>(N)</sup>.
 
 ```c
 int next_block(FILE *f, union Block *B, enum Status *S, uint64_t *nobits)
@@ -262,8 +261,53 @@ file and abc.txt file which contains the string "abc".
 
 
 ## What the SHA512 algorithm is and why it's important
-The SHA-512 algorithm is a secure hash algorithm which takes a message of any length < 2<sup>128</sup> bits as input into the SHA-512 hash algorithm. It returns
-an output known as a message digest, which has a length of 512 bits.
+SHA-512 is a function of cryptographic algorithm SHA-2, derived from SHA-1. The algorithm is a secure hash algorithm
+which is part of the Secure Hash Standard (SHS) (FIPS PUB 180-4) and by is a Computer security standard 
+in Cryptography. It takes a message of any length < 2<sup>128</sup> bits as input into the SHA-512 hash 
+algorithm. The 512-bit hash value is computed using the compression function f in a Merkle–Damgård construction, which is a method of
+building hash functions which make it hard to find two inputs that hash to the same output.
+SHA-512 finally returns an output known as a message digest, which has a length of 512 bits.
+<br/>
+![MerkleDamgård](https://i.gyazo.com/fcea45249b1fc6e7ac4bb84a104458d1.png "Merkle–Damgård construction")
+<br/>
+According to the secure hash standard, SHA512 is "secure" because any change to a message will, with a very high probability, 
+result in a different message digest. It is also computationally infeasible to:
+* find a message that corresponds to a given message digest, or
+* find two different messages that produce the same message digest.
+
+
+I also previously explained how this algorithm works [in the description](#Description). In terms of the importance of SHA-512, 
+it is mainly used for internet security, with hashing functions being used in Transport Layer Security, Secure Sockets Layer,
+Pretty Good Privacy, SSH and a wide range of protocols and security applications. These internet layers are vulnerable to attacks and 
+in many cases, the data which is being transported accross the internet is quite sensitive and it could be very consequential if it falls
+into the wrong hands through hacking. There are 256^32 hash combinations for SHA-512, it is almost impossible to decrypt the output from a 
+SHA-512 function and performing this function on this sensitive data plays an essential role in protecting private information and reducing 
+a large number of vulnerabilities. 
+
+```c
+// Number of possible SHA512 hash combinations =
+115,792,089,237,316,195,423,570,985,008,687,907,853,269,984,665,640,564,039,457,584,007,913,129,639,936
+```
+ 
+A digital certificate or identity certificate, is an electronic document used to prove the ownership of a public key. To assure authenticity,
+only the sender has their private key so only they can encrypt by using their private key which can be decrypted by sender’s public key. These
+keys are vulnerable when they're being passed around on the internet so its important that they use a hashing algorithm like SHA-512 to encrypt
+the data, making it virtually unhackable by a third party and decreasing the vulnerabilities on the keys.
+<br/>
+![Digital Certificate](https://id4d.worldbank.org/sites/id4d-ms8.extcc.com/files/inline-images/18%20digital%20certificates.png "Digital Certificate")
+<br/>
+Blockchain is a decentralized, digital ledger that contains a systematic series of blocks which uses hashing algorithms including SHA-512 to
+link all of the blocks together. It allows digital information to be recorded and distributed, but not edited. Blockchain is basically a database which verifies 
+transactions fairly inexpensively and stores the information in the form of secure hash values, which significantly increases the safety of this information. Blockchain
+is used as a cryptocurrency wallet and cryptocurrency exchange and supports popular cryptocurrencies such as Bitcoin and Etherium. These coins are rising in popularity and 
+importance as bitcoin and co are beginning to become commonly accepted as a form of payment. This adds to the importance of SHA-512 as cryptocurrency wallets and exchange
+require high level encryption with low computational cost, which is achievable through the SHA-512 algorithm. There could soon come a time where
+cryptocurrencies are the main form of payment around the world and this evolution will be driven by the secure hashing of the SHA-512 algorithm.
+<br/>
+![Blockchain](https://i.gyazo.com/984edfe83ff026363b01a16f98fbbc0f.png "How Blockchain Works")
+<br/>
+
+
 
 # Questions:
 ## Why can't we reverse the SHA512 algorithm to retrieve the original message from a hash digest?
@@ -274,4 +318,19 @@ an output known as a message digest, which has a length of 512 bits.
 
 # References
 [SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
+<br/>
 [Descriptions of SHA-256, SHA-384, and SHA-512](http://www.iwar.org.uk/comsec/resources/cipher/sha256-384-512.pdf)
+<br/>
+[Security Evaluation of SHA-224, SHA-512/224, and SHA-512/256](https://www.cryptrec.go.jp/exreport/cryptrec-ex-2401-2014.pdf)
+<br/>
+[Merkle Damgård construction](https://en.wikipedia.org/wiki/Merkle–Damgård_construction)
+<br/>
+[Digital certificate i](https://www.geeksforgeeks.org/digital-signatures-certificates/)
+<br/>
+[Digital certificate ii](https://id4d.worldbank.org/guide/digital-certificates-and-pki)
+<br/>
+[Public key certificate](https://en.wikipedia.org/wiki/Public_key_certificate)
+<br/>
+[Blockchain i](https://rishi30-mehta.medium.com/hashing-algorithms-the-brain-of-blockchain-sha-256-sha-512-and-more-7b5f80b99b00)
+<br/>
+[Blockchain ii](https://www.bitpanda.com/academy/en/lessons/how-does-a-blockchain-work/)
