@@ -280,13 +280,13 @@ I also previously explained how this algorithm works [in the description](#Descr
 it is mainly used for internet security, with hashing functions being used in Transport Layer Security, Secure Sockets Layer,
 Pretty Good Privacy, SSH and a wide range of protocols and security applications. These internet layers are vulnerable to attacks and 
 in many cases, the data which is being transported accross the internet is quite sensitive and it could be very consequential if it falls
-into the wrong hands through hacking. There are 256<sup>32</sup> hash combinations for SHA-512, it is almost impossible to decrypt the output from a 
+into the wrong hands through hacking. There are 2<sup>512</sup> hash combinations for SHA-512, it is almost impossible to decrypt the output from a 
 SHA-512 function and performing this function on this sensitive data plays an essential role in protecting private information and reducing 
 a large number of vulnerabilities. 
 
 ```c
 // Number of possible SHA512 hash combinations =
-115,792,089,237,316,195,423,570,985,008,687,907,853,269,984,665,640,564,039,457,584,007,913,129,639,936
+13,407,807,929,942,594,536,800,336,840,032,056,096,056,320,224,120,632,584,568,920,184,736,920,912,928,608,384,136,552,016,760,840,912,392,072,016,104,496,552,640,888,296,464,288,576,984,520,184,520,112,096
 ```
  
 A digital certificate or identity certificate, is an electronic document used to prove the ownership of a public key. To assure authenticity,
@@ -313,7 +313,7 @@ Hashing is a good way validate messages, allows passwords to be stored securely,
 # Questions:
 ## Why can't we reverse the SHA-512 algorithm to retrieve the original message from a hash digest?
 The operations performed by SHA-512 provide a result which is computationally unfeasible to be calculated backwards. To find the original message,
-one would first have to first get the correct hash digest, then construct an input which produces the same hash by generating about  2<sup>512</sup> inputs
+one would first have to first get the correct hash digest, then construct an input which produces the same hash by generating about 2<sup>512</sup> inputs
 and computing the hash for each input until a match is found. Given the current state of technology, it would take less time for mankind to die out completely
 than it would to find the original message from a hash digest using this method, which according to top hashing experts, is one of the only reasonable ways to go about
 reversing SHA-512, even though it is extremely impractical.
@@ -331,10 +331,36 @@ concerns related to preimage attacks. However, in the future it is important to 
 strength of the preimage attacks to a detrimental extent.
 
 ## Can you design an algorithm that, given enough time, will find input messages that give each of the possible 512-bit strings?
+I must restate that there are  2<sup>512</sup> possible outputs, while the number of possible inputs is much larger, being 2<sup>2<sup>512</sup></sup>
+<br/>
+
+```c
+// Number of possible SHA512 hash combinations =
+13,407,807,929,942,594,536,800,336,840,032,056,096,056,320,224,120,632,584,568,920,184,736,920,912,928,608,384,136,552,016,760,840,912,392,072,016,104,496,552,640,888,296,464,288,576,984,520,184,520,112,096
+
+// Possible outputs = 2 to the power of the above number, which provides a significantly larger value
+```
+
+This question caused a bit of confusion for me at first, but I feel I understand what it is asking now as it appears to be looking to see
+if you can design an algorithm that could find one input message for every potential 512-bit output. <br/>
+With the current technology that we have, it would be possible to design an algorithm that would find input messages that give each of the 
+possible 512-bit strings. However, due to the large number of potential outputs and even larger number of potential inputs, it would be 
+highly time consuming to try and find unique input messages for every single possible 512-bit string. So time consuming in fact, that I would
+re-assess the meaning of 'given enough time' in this question, as 'enough time' for this to work, is a lot more time than any human could offer.
+<br/>
+There are so many different hash combinations to account for and in most cases, the algorithm will be outputting hashes which have already been retrieved and
+there will be a struggle to find input messages that correspond to the remaining hash. The algorithm would involve continually parsing code through the SHA-512
+algorithm, recording any unique hashes with their relevant input message and repeating this process until all 2<sup>512</sup> hash numbers have been accounted for.
+Although SHA-512 is considered to be collision resistent, collisions when be unavoidable when trying to execute an algorithm like this.
+<br/>
+So, yes. one could design an algorithm that, given enough time, will find input messages that give each of the possible 512-bit strings. However, 
+I can't see anybody ever devoting the time or resources to perform such a task as I don't see any practical reason to get an input message for every
+every 512 hash output, other than a heartwarming sense of accomplishment.  
 
 ## How difficult is it to find a hash digest beginning with at least twelve zeros?
 
-# References
+
+# References for research elements and images
 [SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
 <br/>
 [Descriptions of SHA-256, SHA-384, and SHA-512](http://www.iwar.org.uk/comsec/resources/cipher/sha256-384-512.pdf)
