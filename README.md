@@ -280,7 +280,7 @@ I also previously explained how this algorithm works [in the description](#Descr
 it is mainly used for internet security, with hashing functions being used in Transport Layer Security, Secure Sockets Layer,
 Pretty Good Privacy, SSH and a wide range of protocols and security applications. These internet layers are vulnerable to attacks and 
 in many cases, the data which is being transported accross the internet is quite sensitive and it could be very consequential if it falls
-into the wrong hands through hacking. There are 256^32 hash combinations for SHA-512, it is almost impossible to decrypt the output from a 
+into the wrong hands through hacking. There are 256<sup>32</sup> hash combinations for SHA-512, it is almost impossible to decrypt the output from a 
 SHA-512 function and performing this function on this sensitive data plays an essential role in protecting private information and reducing 
 a large number of vulnerabilities. 
 
@@ -306,11 +306,29 @@ cryptocurrencies are the main form of payment around the world and this evolutio
 <br/>
 ![Blockchain](https://i.gyazo.com/984edfe83ff026363b01a16f98fbbc0f.png "How Blockchain Works")
 <br/>
+Hashing is a good way validate messages, allows passwords to be stored securely, and makes determining whether or not a message or file has been tampered with a lot quicker.
 
 
 
 # Questions:
-## Why can't we reverse the SHA512 algorithm to retrieve the original message from a hash digest?
+## Why can't we reverse the SHA-512 algorithm to retrieve the original message from a hash digest?
+The operations performed by SHA-512 provide a result which is computationally unfeasible to be calculated backwards. To find the original message,
+one would first have to first get the correct hash digest, then construct an input which produces the same hash by generating about  2<sup>512</sup> inputs
+and computing the hash for each input until a match is found. Given the current state of technology, it would take less time for mankind to die out completely
+than it would to find the original message from a hash digest using this method, which according to top hashing experts, is one of the only reasonable ways to go about
+reversing SHA-512, even though it is extremely impractical.
+<br/> 
+The number of possible hash values (2<sup>512</sup>), is greatly exceeded by the number of possible inputs. Because of this, an input linked to a hash 
+won’t always match the original input/message. Vulnerabilities which made reversing of hashing algorithms possible was one of the main reasons for the
+upgrade from MD5/SHA1 hashing up to SHA2 (set of cryptographic hash functions which contains SHA-512). The NIST mainly published SHA-2 to combat these
+vulnerabilities and wouldn't have published SHA-512 as a federal standard or a royalty-free license if it was unable to do so successfully.
+<br/>
+Since we are getting the modulo (what is left over after division) instead of a direct number input, the returned number from the modulo operation 
+can be found in a large number of different ways. In fact, there are infinite combinations which could get the result of a modulo operation, making it impossible
+to crack. A preimage attack attempts to find a message associated with a specific hash value. When compared to other hashing algorithms, sha512 and other SHA-2
+algorithms are much more tolerant to preimage attacks. In fact, since the SHA-512 algorithm carries 80 steps, it doesn't currently face any major security
+concerns related to preimage attacks. However, in the future it is important to account for advances in technology as any major technological advances could improve the
+strength of the preimage attacks to a detrimental extent.
 
 ## Can you design an algorithm that, given enough time, will find input messages that give each of the possible 512-bit strings?
 
@@ -334,3 +352,5 @@ cryptocurrencies are the main form of payment around the world and this evolutio
 [Blockchain i](https://rishi30-mehta.medium.com/hashing-algorithms-the-brain-of-blockchain-sha-256-sha-512-and-more-7b5f80b99b00)
 <br/>
 [Blockchain ii](https://www.bitpanda.com/academy/en/lessons/how-does-a-blockchain-work/)
+<br/>
+[Preimage attacks](https://eprint.iacr.org/2009/479.pdf)
