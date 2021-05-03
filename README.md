@@ -385,6 +385,11 @@ All and all it is evident from my research that it is not all that difficult to 
 terms of technical difficulty, it's just as easy as repeating the SHA-512 function until the desired hash is achieved. The time taken to do 
 such a thing could be quite lengthy but fast improving technology is making it easier and easier every year.
 
+**Analogy:** <br/>
+The way I see it, finding a hash digest beginning with at least twelve zeros is similar to trying to win a raffle. Buying the ticket is not
+that difficult, but you're probably not going to win unless you keep buying tickets! If you keep buying loads of tickets, eventually you're bound
+to win, or find a hash digest full of leading zeros.
+
 # References for research elements and images
 * [SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
 
