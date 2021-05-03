@@ -358,25 +358,52 @@ I can't see anybody ever devoting the time or resources to perform such a task a
 every 512 hash output, other than a heartwarming sense of accomplishment.  
 
 ## How difficult is it to find a hash digest beginning with at least twelve zeros?
+SHA-512 is a one way function which is aimed at creating hash values which are difficult to predict in the sense that there is no real 
+correlation between input text and output hash. At first glance, it seems hard to find a hash value with 12 leading hex zeroes. Mathematically,
+one out of every 2<sup>48</sup> hash values are ones beginning with 12 zeros. This, coupled with the fact that there are 2<sup>512</sup> 
+possible hash outputs means that there is very little probability that the hash value returned is one which contains 12 or more zeros. The fact
+that SHA-512 is a one way function also means that to find a hash digest beginning with at least twelve zeros, one must re-run the SHA-512
+algorithm over and over again until eventually, they find the desired number of leading zeros.
 
+Bitcoin mining involves systems trying to achieve a hash. This hash has a value that must be below a certain number in order to be mined. This
+number is denoted as the target hash and the number of zeros this hash begins with is referred to as the difficulty since it's harder to mine
+coins with more leading zeros. To this date, thanks to advances in technology and growing numbers of machines which are mining, bitcoin miners
+have to find a hash beginning with nineteen zeroes. But with this we have to consider the extremely wide scale of high quality michenes which
+are set up to mine bitcoin, which is proven in studies like [this one]((https://www.bbc.com/news/technology-22153687)) which one shows part of 
+bitcoins worldwide mining operations.
+
+In a centralized system, the difficulty involved in finding a hash digest beginning with at least twelve zeros would depend on the hardware
+which is in use. There is quite a low probability in finding a hash digest with all these leading zeros so a lot of iterations would be involved
+before the correct output is obtained. To perform all of these calculations within a reasonable amount of time, a good system would be required,
+but for the most part it would be a case of trial and error until the correct hash is found, which doesn't stray too far in technical diffculty
+from executing the SHA-512 algorithm.
+
+For large distributed systems, finding a hash digest with twelve zeros or more is a lot easier as the time taken to iterate through the possibilities
+would be greatly decreased by the sheer amount of systems working on the problem. This is why bitcoin now has a difficulty of 19 (19 leading zeros).
+
+All and all it is evident from my research that it is not all that difficult to find a hash digest beginning with at least twelve zeros. In 
+terms of technical difficulty, it's just as easy as repeating the SHA-512 function until the desired hash is achieved. The time taken to do 
+such a thing could be quite lengthy but fast improving technology is making it easier and easier every year.
 
 # References for research elements and images
-[SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
-<br/>
-[Descriptions of SHA-256, SHA-384, and SHA-512](http://www.iwar.org.uk/comsec/resources/cipher/sha256-384-512.pdf)
-<br/>
-[Security Evaluation of SHA-224, SHA-512/224, and SHA-512/256](https://www.cryptrec.go.jp/exreport/cryptrec-ex-2401-2014.pdf)
-<br/>
-[Merkle Damgård construction](https://en.wikipedia.org/wiki/Merkle–Damgård_construction)
-<br/>
-[Digital certificate i](https://www.geeksforgeeks.org/digital-signatures-certificates/)
-<br/>
-[Digital certificate ii](https://id4d.worldbank.org/guide/digital-certificates-and-pki)
-<br/>
-[Public key certificate](https://en.wikipedia.org/wiki/Public_key_certificate)
-<br/>
-[Blockchain i](https://rishi30-mehta.medium.com/hashing-algorithms-the-brain-of-blockchain-sha-256-sha-512-and-more-7b5f80b99b00)
-<br/>
-[Blockchain ii](https://www.bitpanda.com/academy/en/lessons/how-does-a-blockchain-work/)
-<br/>
-[Preimage attacks](https://eprint.iacr.org/2009/479.pdf)
+* [SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
+
+* [Descriptions of SHA-256, SHA-384, and SHA-512](http://www.iwar.org.uk/comsec/resources/cipher/sha256-384-512.pdf)
+
+* [Security Evaluation of SHA-224, SHA-512/224, and SHA-512/256](https://www.cryptrec.go.jp/exreport/cryptrec-ex-2401-2014.pdf)
+
+* [Merkle Damgård construction](https://en.wikipedia.org/wiki/Merkle–Damgård_construction)
+
+* [Digital certificate i](https://www.geeksforgeeks.org/digital-signatures-certificates/)
+
+* [Digital certificate ii](https://id4d.worldbank.org/guide/digital-certificates-and-pki)
+
+* [Public key certificate](https://en.wikipedia.org/wiki/Public_key_certificate)
+
+* [Blockchain i](https://rishi30-mehta.medium.com/hashing-algorithms-the-brain-of-blockchain-sha-256-sha-512-and-more-7b5f80b99b00)
+
+* [Blockchain ii](https://www.bitpanda.com/academy/en/lessons/how-does-a-blockchain-work/)
+
+* [Preimage attacks](https://eprint.iacr.org/2009/479.pdf)
+
+* [Leading Zeros](https://youtu.be/_LPaIL6AqSQ)
