@@ -258,8 +258,30 @@ My repo also contains a gitignore file which restricts the unnecessary files fro
 file and abc.txt file which contains the string "abc". 
 
 ## Compilation instructions
+To compile and run this code, you must first clone the repository onto your own device by navigating to an empty directory, opening a new  
+terminal (can be windows or linux) and typing:
+```
+git clone https://github.com/NathanGarrihy/TheoryOfAlgoProject
+```
+After cloning the repo, navigate to the correct directory and typing 
 
+```
+cd TheoryOfAlgoProject
+```
+Once there, in order to run the algorithm you must first: 
+* put the desired input text into the abc.txt file
+* type 'make sha512'
+* type './sha512 abc.txt'
 
+This will execute the sha512 algorithm on whatever text is inside the abc.txt file.
+
+To run the tests:
+* type 'make clean'
+* next, type 'make'
+* then type 'make test'
+
+![Terminal](https://i.gyazo.com/4625521628ee2d77cecf5959697f405d.png "Terminal Commands")
+ 
 ## What the SHA512 algorithm is and why it's important
 SHA-512 is a function of cryptographic algorithm SHA-2, derived from SHA-1. The algorithm is a secure hash algorithm
 which is part of the Secure Hash Standard (SHS) (FIPS PUB 180-4) and by is a Computer security standard 
@@ -393,7 +415,13 @@ to win, or find a hash digest full of leading zeros.
 # References for research elements and images
 * [SHA-512 BitcoinWiki](https://en.bitcoinwiki.org/wiki/SHA-512)
 
+* [SHA-2 Wiki](https://en.wikipedia.org/wiki/SHA-2)
+
+* [Analysis of SHA-512 for encryption purposes](https://www.researchgate.net/publication/327392778_Analysis_of_Secure_Hash_Algorithm_SHA_512_for_Encryption_Process_on_Web_Based_Application)
+
 * [Descriptions of SHA-256, SHA-384, and SHA-512](http://www.iwar.org.uk/comsec/resources/cipher/sha256-384-512.pdf)
+
+* [Why can't we reverse a hash?](https://stackoverflow.com/questions/6603849/why-is-it-not-possible-to-reverse-a-cryptographic-hash)
 
 * [Security Evaluation of SHA-224, SHA-512/224, and SHA-512/256](https://www.cryptrec.go.jp/exreport/cryptrec-ex-2401-2014.pdf)
 
